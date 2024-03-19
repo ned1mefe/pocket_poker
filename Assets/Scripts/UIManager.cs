@@ -34,9 +34,14 @@ public class UIManager : MonoBehaviour
         // should open a window to explain
     }
 
+    public void BackButtonPressed()
+    {
+        _mainMenuScreen.gameObject.SetActive(true);
+        _configScreen.gameObject.SetActive(false);
+    }
     public void StartButtonPressed()
     {
-        GameConfig config = new GameConfig((short)_playerCountSlider.value);
+        GameConfig config = new GameConfig((short)_playerCountSlider.value, 0); //TODO: fix minBet
         // should change the scene
     }
 }
