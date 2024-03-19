@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
-using UnityEditor;
 using UnityEngine;
 
 public enum HandStatus
@@ -29,9 +26,6 @@ public class Player
                               // and the cards at table, will be 7 cards on the turn
     public List<Card> BestHand { get; private set; } // this is the best hand player can make with 5 cards in his hand and board
                                                      // Aces may appear as 1 in these
-    public bool IsBusted => Money == 0;
-
-    
     public Player(string name, int buyIn)
     {
         _name = name;
@@ -40,6 +34,7 @@ public class Player
         BestHand = new List<Card>();
         Status = HandStatus.HighCard;
     }
+    public bool IsBusted => Money == 0;
 
     public void Bet(int bet)
     {
@@ -54,6 +49,11 @@ public class Player
     public void WinPot(int pot)
     {
         Money += pot;
+    }
+
+    public void AddCard(Card card)
+    {
+        _hand.Add(card);
     }
 
     void SortHand() => _hand = _hand.OrderBy(c => -c.Number).ToList();
@@ -81,8 +81,9 @@ public class Player
         
         CheckRoyalFlush(); // also checks straight flush so it is passed
 
+        if(Status == HandStatus.RoyalFlush) return;
         if(Status == HandStatus.StraightFlush) return;
-        
+
         CheckQuads();
         if(Status == HandStatus.FourOfaKind) return;
         

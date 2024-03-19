@@ -4,7 +4,6 @@ using Slider = UnityEngine.UI.Slider;
 
 public class UIManager : MonoBehaviour
 {
-    // public static UIManager Instance; not needed now
     private GameObject _mainMenuScreen;
     private GameObject _configScreen;
     private TextMeshProUGUI _playerCountText;
@@ -42,6 +41,8 @@ public class UIManager : MonoBehaviour
     public void StartButtonPressed()
     {
         GameConfig config = new GameConfig((short)_playerCountSlider.value, 0); //TODO: fix minBet
-        // should change the scene
+        GameManager.Instance.SetConfig(config);
+        GameManager.Instance.Test();
+        // should change the window
     }
 }
