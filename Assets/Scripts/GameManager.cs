@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,8 +23,6 @@ public class GameManager
         }
     }
     
-    public void SetConfig(GameConfig config) => _config = config;
-
     private GameManager()
     {
         _deck = new List<Card>();
@@ -41,34 +40,45 @@ public class GameManager
         Shuffle();
     }
 
+    public void InitializeGame(GameConfig config, List<String> nameList) // should initialize playerList and start the gameLoop
+    {
+        _config = config;
+
+        foreach (var name in nameList)
+        {
+            var pl = new Player(name, config.BuyIn);
+            _players.Add(pl);
+        }
+        
+        
+        Test();
+    }
+
+    public void createPot() // should create a pot starting the game and when a player bets more than another player's money
+    {
+        
+    }
+    
+
     public void Test()
     {
-        var flag = 100;
-        while (flag-- > 0)
+        Debug.LogWarning("Hand:");
+        Shuffle();
+
+        var efe = new Player("efe", 250);
+        
+        foreach (var card in _deck.GetRange(0,7))
         {
-            Debug.LogWarning("Hand:");
-            Shuffle();
+            Debug.Log(card);
+            efe.AddCard(card);
+        }
+        
+        efe.Evaluate();
 
-            var efe = new Player("efe", 250);
-            
-            //there is problem with straightFlush
-            efe.AddCard(new Card(14, Kind.Diamond));
-            efe.AddCard(new Card(13, Kind.Club));
-            efe.AddCard(new Card(12, Kind.Club));
-            efe.AddCard(new Card(11, Kind.Club));
-            efe.AddCard(new Card(10, Kind.Club));
-            efe.AddCard(new Card(9, Kind.Club));
-            efe.AddCard(new Card(8, Kind.Club));
-            
-            efe.Evaluate();
-            if (efe.Status is HandStatus.StraightFlush or HandStatus.RoyalFlush or HandStatus.Straight) flag = 0;
-
-            Debug.LogError(efe.Status);
-            foreach (var card in efe.BestHand)
-            {
-                Debug.Log(card);
-            }
-            
+        Debug.LogError(efe.Status);
+        foreach (var card in efe.BestHand)
+        {
+            Debug.Log(card);
         }
         
     }

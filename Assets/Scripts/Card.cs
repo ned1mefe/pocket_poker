@@ -1,5 +1,3 @@
-using Unity.VisualScripting;
-
 public enum Kind{
     Spade,
     Diamond,
@@ -20,7 +18,7 @@ public class Card
     public override string ToString()
     {
         const string faces = "JQKA";
-        return Kind.ToString() + " " + (Number > 10 ? faces[Number-11] : Number);
+        return Kind + " " + (Number > 10 ? faces[Number-11] : Number);
     }
 
     public override bool Equals(object obj)

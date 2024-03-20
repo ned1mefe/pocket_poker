@@ -1,11 +1,11 @@
 public class GameConfig
 {
     public readonly short PlayerCount;
-    public readonly int MinBet;
+    public readonly int BuyIn;
         
-    public GameConfig(short playerCount, int minBet)
+    public GameConfig(short playerCount, int buyIn)
     {
         PlayerCount = playerCount;
-        MinBet = minBet;
+        BuyIn = buyIn;
     }
 }
