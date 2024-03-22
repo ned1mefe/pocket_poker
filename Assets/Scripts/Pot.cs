@@ -4,11 +4,13 @@ public class Pot
 {
     public List<Player> Players { get; }
     private int _money;
+    public readonly Player BigBlind;
 
-    Pot()
+    Pot(Player bigBlind)
     {
         Players = new List<Player>();
         _money = 0;
+        BigBlind = bigBlind;
     }
 
     public void PlayerFolded(Player player) => Players.Remove(player);

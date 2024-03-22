@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     private GameObject _configScreen;
     private TMP_InputField _buyInInputField;
     private TMP_InputField _nameInputField;
+    private TMP_InputField _bBlindInputField;
     private List<String> _nameList;
     private TextMeshProUGUI _names;
     private void Awake()
@@ -18,9 +19,9 @@ public class UIManager : MonoBehaviour
         _configScreen = GameObject.Find("Canvas").transform.Find("ConfigScreen").gameObject;
         _buyInInputField = _configScreen.transform.Find("BuyIn").GetComponentInChildren<TMP_InputField>();
         _nameInputField = _configScreen.transform.Find("AddPlayer").GetComponentInChildren<TMP_InputField>();
+        _bBlindInputField = _configScreen.transform.Find("BigBlind").GetComponentInChildren<TMP_InputField>();
         _nameList = new List<string>();
         _names = _configScreen.transform.Find("Players").GetChild(1).GetComponent<TextMeshProUGUI>();
-
     }
 
     public void PlayButtonPressed()
@@ -74,10 +75,17 @@ public class UIManager : MonoBehaviour
     public void StartButtonPressed()
     {
         if (_buyInInputField.text is null or "") return;
-        var buyIn = int.Parse(_buyInInputField.text);
-        if (buyIn <= 0) return;
+        if (_bBlindInputField.text is null) return;
+        if (_buyInInputField.text is null) return;
         
-        GameConfig config = new GameConfig((short)_nameList.Count, buyIn); // FİX
+        var buyIn = int.Parse(_buyInInputField.text);
+        var playerCount = _nameList.Count;
+        var bigBlind = int.Parse(_bBlindInputField.text);
+        
+        if (buyIn <= 0) return;
+        if (playerCount == 0) return;
+        
+        GameConfig config = new GameConfig((short)playerCount, buyIn, bigBlind);
         GameManager.Instance.InitializeGame(config,_nameList);
         // should change the window
     }

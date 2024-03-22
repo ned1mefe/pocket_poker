@@ -54,7 +54,7 @@ public class GameManager
         Test();
     }
 
-    public void createPot() // should create a pot starting the game and when a player bets more than another player's money
+    public void Deal() // should create a pot starting the game and when a player bets more than another player's money
     {
         
     }

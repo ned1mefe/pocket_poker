@@ -19,7 +19,7 @@ public enum HandStatus
 public class Player
 {
     private readonly string _name;
-    public int Money { get; private set; }
+    public int Balance { get; private set; }
     public HandStatus Status{ get; private set; }
     
     private List<Card> _hand; // this hand contains both the players hand
@@ -29,26 +29,26 @@ public class Player
     public Player(string name, int buyIn)
     {
         _name = name;
-        Money = buyIn;
+        Balance = buyIn;
         _hand = new List<Card>();
         BestHand = new List<Card>();
         Status = HandStatus.HighCard;
     }
-    public bool IsBusted => Money == 0;
+    public bool IsBusted => Balance == 0;
 
     public void Bet(int bet)
     {
-        if (bet > Money)
+        if (bet > Balance)
         {
             Debug.Log("Invalid bet");
             return;
         }
-        Money -= bet;
+        Balance -= bet;
     }
     
     public void WinPot(int pot)
     {
-        Money += pot;
+        Balance += pot;
     }
 
     public void AddCard(Card card)
