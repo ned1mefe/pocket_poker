@@ -30,14 +30,23 @@ public class Player
     public HandStatus Status{ get; private set; }
     public TurnStatus TurnStatus;
     
-    private List<Card> _hand; // this hand contains both the players hand
-                              // and the cards at table, will be 7 cards on the turn
-    public List<Card> BestHand { get; private set; } // this is the best hand player can make with 5 cards in his hand and board
-                                                     // Aces may appear as 1 in these in the case of wheel straight
+    // this allCards contains both the hole cards
+    // and the community cards, will be 7 cards on the turn
+    private List<Card> _allCards;
+
+    // hole cards only
+    private List<Card> _hand;
+    
+    // this is the best hand player can make with 5 cards in his hand and board
+     // Aces may appear as 1 in these in the case of wheel straight                          
+    public List<Card> BestHand { get; private set; } 
+    
+    
     public Player(string name, int buyIn)
     {
         _name = name;
         Stack = buyIn;
+        _allCards = new List<Card>();
         _hand = new List<Card>();
         BestHand = new List<Card>();
         Status = HandStatus.HighCard;
@@ -60,16 +69,31 @@ public class Player
         Stack += pot;
     }
 
-    public void AddCard(Card card)
+    public void AddHoleCards(Card card1, Card card2)
     {
-        _hand.Add(card);
+        _hand.Add(card1);
+        _hand.Add(card2);
+        _allCards.Add(card1);
+        _allCards.Add(card2);
     }
 
-    void SortHand() => _hand = _hand.OrderBy(c => -c.Number).ToList();
+    public void AddFlopCards(Card card1, Card card2, Card card3)
+    {
+        _allCards.Add(card1);
+        _allCards.Add(card2);
+        _allCards.Add(card3);
+    }
+    
+    public void AddTurnRiverCard(Card card)
+    {
+        _allCards.Add(card);
+    }
+
+    private void SortHand() => _allCards = _allCards.OrderBy(c => -c.Number).ToList();
 
     private List<Card> FillKickers(List<Card> currentBestHand, int kickersNeeded)
     {
-        var remainedCards = _hand.Except(currentBestHand).OrderBy(c => -c.Number).ToList();
+        var remainedCards = _allCards.Except(currentBestHand).OrderBy(c => -c.Number).ToList();
         var kickers = new List<Card>();
         
         for (int i = 0; i < kickersNeeded; i++)
@@ -114,15 +138,15 @@ public class Player
         CheckPair();
         if(Status == HandStatus.OnePair) return;
 
-        BestHand = _hand.GetRange(0, (_hand.Count >= 5 ? 5 : _hand.Count));
+        BestHand = _allCards.GetRange(0, (_allCards.Count >= 5 ? 5 : _allCards.Count));
         
     }
     
     private void CheckPair()
     {
-        foreach (var card in _hand)
+        foreach (var card in _allCards)
         {
-            var identicals = _hand.Where(c => c.Number == card.Number).ToList();
+            var identicals = _allCards.Where(c => c.Number == card.Number).ToList();
             if (identicals.Count == 2)
             {
                 Status = HandStatus.OnePair;
@@ -133,12 +157,12 @@ public class Player
     }
     private void CheckTwoPair()
     {
-        foreach (var card in _hand)
+        foreach (var card in _allCards)
         {
-            var identicals = _hand.Where(c => c.Number == card.Number).ToList();
+            var identicals = _allCards.Where(c => c.Number == card.Number).ToList();
             if (identicals.Count != 2) continue;
 
-            var rest = _hand.Except(identicals).OrderBy(c => -c.Number).ToList();
+            var rest = _allCards.Except(identicals).OrderBy(c => -c.Number).ToList();
             foreach (var ca in rest)
             {
                 var restIdenticals = rest.Where(c => ca.Number == c.Number).ToList();
@@ -155,9 +179,9 @@ public class Player
     }
     private void CheckSet()
     {
-        foreach (var card in _hand)
+        foreach (var card in _allCards)
         {
-            var identicals = _hand.Where(c => c.Number == card.Number).ToList();
+            var identicals = _allCards.Where(c => c.Number == card.Number).ToList();
             if (identicals.Count == 3)
             {
                 Status = HandStatus.ThreeOfaKind;
@@ -169,7 +193,7 @@ public class Player
     private void CheckStraight()
     {
         var straight = new List<Card>();
-        foreach (var card in _hand)
+        foreach (var card in _allCards)
         {
             straight.Clear();
             straight.Add(card);
@@ -179,7 +203,7 @@ public class Player
             bool isStraight = true;
             for (int i = 1; i < 5; i++)
             {
-                var nextCard = _hand.Find(c => c.Number == n + i);
+                var nextCard = _allCards.Find(c => c.Number == n + i);
 
                 if (nextCard is not null)
                 {
@@ -201,10 +225,10 @@ public class Player
     }
     private void CheckFlush()
     {
-        var spades = _hand.Where(c => c.Kind == Kind.Spade).OrderBy(c => -c.Number).ToList();
-        var diamonds = _hand.Where(c => c.Kind == Kind.Diamond).OrderBy(c => -c.Number).ToList();
-        var hearts = _hand.Where(c => c.Kind == Kind.Heart).OrderBy(c => -c.Number).ToList();
-        var clubs = _hand.Where(c => c.Kind == Kind.Club).OrderBy(c => -c.Number).ToList();
+        var spades = _allCards.Where(c => c.Kind == Kind.Spade).OrderBy(c => -c.Number).ToList();
+        var diamonds = _allCards.Where(c => c.Kind == Kind.Diamond).OrderBy(c => -c.Number).ToList();
+        var hearts = _allCards.Where(c => c.Kind == Kind.Heart).OrderBy(c => -c.Number).ToList();
+        var clubs = _allCards.Where(c => c.Kind == Kind.Club).OrderBy(c => -c.Number).ToList();
 
         if (spades.Count() >= 5)
         {
@@ -232,12 +256,12 @@ public class Player
     }
     private void CheckFullHouse()
     {
-        foreach (var card in _hand)
+        foreach (var card in _allCards)
         {
-            var identicals = _hand.Where(c => c.Number == card.Number).ToList();
+            var identicals = _allCards.Where(c => c.Number == card.Number).ToList();
             if (identicals.Count != 3) continue;
 
-            var rest = _hand.Except(identicals).OrderBy(c => -c.Number).ToList();
+            var rest = _allCards.Except(identicals).OrderBy(c => -c.Number).ToList();
             foreach (var ca in rest)
             {
                 var restIdenticals = rest.Where(c => ca.Number == c.Number).ToList();
@@ -253,9 +277,9 @@ public class Player
     }
     private void CheckQuads()
     {
-        foreach (var card in _hand)
+        foreach (var card in _allCards)
         {
-            var identicals = _hand.Where(c => c.Number == card.Number).ToList();
+            var identicals = _allCards.Where(c => c.Number == card.Number).ToList();
             if (identicals.Count == 4)
             {
                 Status = HandStatus.FourOfaKind;
@@ -266,7 +290,7 @@ public class Player
     }
     private void CheckStraightFlush()
     {
-        foreach (var card in _hand)
+        foreach (var card in _allCards)
         {
             short n = (card.Number == 14) ? (short)1 : card.Number;
             var k = card.Kind;
@@ -281,7 +305,7 @@ public class Player
                 new Card((short)(n + 1), k)
             };
 
-            if (shouldExistList.TrueForAll(c => _hand.Contains(c)))
+            if (shouldExistList.TrueForAll(c => _allCards.Contains(c)))
             {
                 shouldExistList.Add(new Card(n, k));
                 BestHand = shouldExistList;

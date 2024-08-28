@@ -72,17 +72,7 @@ public class GameManager
         ActivePlayer = _players[sbIndex];
         queueIndex = sbIndex;
         
-        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind/2);
-        
-        //handleBlind
-        
-        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind);
-        
-        
-    }
-
-    public void Deal() // should create a pot starting the game and when a player bets more than another player's money
-    {
+        HandleBlinds();
         
     }
     
@@ -97,7 +87,7 @@ public class GameManager
         foreach (var card in _deck.GetRange(0,7))
         {
             Debug.Log(card);
-            efe.AddCard(card);
+            //efe.AddCard(card);
         }
         
         efe.Evaluate();
@@ -128,7 +118,6 @@ public class GameManager
             // start new phase
         }
     }
-    
     private void HandleRaise(int bet)
     {
         _activePot.HandlePlayerBet(ActivePlayer, bet);
@@ -170,8 +159,19 @@ public class GameManager
         }
         
     }
-    
-    
+
+    private void HandleBlinds()
+    {
+        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind/2);
+        
+        queueIndex = ++queueIndex % _players.Count;
+        ActivePlayer = _players[queueIndex];
+        
+        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind);
+        
+        queueIndex = ++queueIndex % _players.Count;
+        ActivePlayer = _players[queueIndex];
+    }
     
     
 }
