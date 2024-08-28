@@ -16,39 +16,48 @@ public enum HandStatus
     RoyalFlush = 9,
 }
 
+public enum TurnStatus
+{
+    Waiting = 1,
+    Acted = 2,
+    Folded = 3,
+}
+
 public class Player
 {
     private readonly string _name;
-    public int Balance { get; private set; }
+    public int Stack { get; private set; }
     public HandStatus Status{ get; private set; }
+    public TurnStatus TurnStatus;
     
     private List<Card> _hand; // this hand contains both the players hand
                               // and the cards at table, will be 7 cards on the turn
     public List<Card> BestHand { get; private set; } // this is the best hand player can make with 5 cards in his hand and board
-                                                     // Aces may appear as 1 in these
+                                                     // Aces may appear as 1 in these in the case of wheel straight
     public Player(string name, int buyIn)
     {
         _name = name;
-        Balance = buyIn;
+        Stack = buyIn;
         _hand = new List<Card>();
         BestHand = new List<Card>();
         Status = HandStatus.HighCard;
+        TurnStatus = TurnStatus.Waiting;
     }
-    public bool IsBusted => Balance == 0;
+    public bool IsBusted => Stack == 0;
 
     public void Bet(int bet)
     {
-        if (bet > Balance)
+        if (bet > Stack)
         {
             Debug.Log("Invalid bet");
             return;
         }
-        Balance -= bet;
+        Stack -= bet;
     }
     
     public void WinPot(int pot)
     {
-        Balance += pot;
+        Stack += pot;
     }
 
     public void AddCard(Card card)

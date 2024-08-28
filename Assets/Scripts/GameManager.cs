@@ -11,6 +11,12 @@ public class GameManager
     private List<Player> _players;
     private GameConfig _config;
     private static GameManager _instance;
+    private Pot _activePot;
+    private List<Pot> _pots;
+    
+    private int sbIndex;
+    private int queueIndex;
+    public Player ActivePlayer { get; private set; }
     public static GameManager Instance
     {
         get
@@ -22,13 +28,15 @@ public class GameManager
             return _instance;
         }
     }
+
     
     private GameManager()
     {
         _deck = new List<Card>();
         _random = new Random();
         _players = new List<Player>();
-
+        _pots = new List<Pot>();
+        sbIndex = 0;
         for (short i = 2; i <= 14; i++)
         {
             _deck.Add(new Card(i, Kind.Club));
@@ -40,7 +48,7 @@ public class GameManager
         Shuffle();
     }
 
-    public void InitializeGame(GameConfig config, List<String> nameList) // should initialize playerList and start the gameLoop
+    public void InitializeGame(GameConfig config, List<String> nameList) // should initialize playerList and start the game loop
     {
         _config = config;
 
@@ -49,9 +57,28 @@ public class GameManager
             var pl = new Player(name, config.BuyIn);
             _players.Add(pl);
         }
+
+        //Test();
+    }
+
+    private void StartMainPot()
+    {
+        _activePot = new Pot(
+            _players[sbIndex+1 % _players.Count], 
+            _players[sbIndex]
+            );
+        
+        _pots.Add(_activePot);
+        ActivePlayer = _players[sbIndex];
+        queueIndex = sbIndex;
+        
+        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind/2);
+        
+        //handleBlind
+        
+        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind);
         
         
-        Test();
     }
 
     public void Deal() // should create a pot starting the game and when a player bets more than another player's money
@@ -86,6 +113,64 @@ public class GameManager
     {
         _deck = _deck.OrderBy(_ => _random.Next()).ToList();
     }
+
+    private void HandleCheck()
+    {
+        ActivePlayer.TurnStatus = TurnStatus.Acted;
+        do
+        {
+            queueIndex = ++queueIndex % _players.Count;
+            ActivePlayer = _players[queueIndex];
+        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+
+        if (ActivePlayer.TurnStatus == TurnStatus.Acted)
+        {
+            // start new phase
+        }
+    }
+    
+    private void HandleRaise(int bet)
+    {
+        _activePot.HandlePlayerBet(ActivePlayer, bet);
+        
+        foreach (var player in _players.Where(player => player.TurnStatus == TurnStatus.Acted))
+        {
+            player.TurnStatus = TurnStatus.Waiting;
+        }
+        
+        ActivePlayer.TurnStatus = TurnStatus.Acted;
+        
+        do
+        {
+            queueIndex = ++queueIndex % _players.Count;
+            ActivePlayer = _players[queueIndex];
+        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+
+        if (ActivePlayer.TurnStatus == TurnStatus.Acted)
+        {
+            // start new phase
+        }
+        
+    }
+    private void HandleFold()
+    {
+        _activePot.HandlePlayerFold(ActivePlayer);
+        
+        ActivePlayer.TurnStatus = TurnStatus.Folded;
+        
+        do
+        {
+            queueIndex = ++queueIndex % _players.Count;
+            ActivePlayer = _players[queueIndex];
+        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+
+        if (ActivePlayer.TurnStatus == TurnStatus.Acted)
+        {
+            // start new phase
+        }
+        
+    }
+    
     
     
     

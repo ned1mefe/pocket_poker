@@ -8,20 +8,28 @@ public class UIManager : MonoBehaviour
 {
     private GameObject _mainMenuScreen;
     private GameObject _configScreen;
+    private GameObject _passScreen;
+    private GameObject _playScreen;
     private TMP_InputField _buyInInputField;
     private TMP_InputField _nameInputField;
     private TMP_InputField _bBlindInputField;
     private List<String> _nameList;
     private TextMeshProUGUI _names;
+    private TextMeshProUGUI _passToPlayerText;
     private void Awake()
     {
         _mainMenuScreen = GameObject.Find("Canvas").transform.Find("MainMenuScreen").gameObject;
         _configScreen = GameObject.Find("Canvas").transform.Find("ConfigScreen").gameObject;
+        _passScreen = GameObject.Find("Canvas").transform.Find("PassScreen").gameObject;
+        _playScreen = GameObject.Find("Canvas").transform.Find("PlayScreen").gameObject;
+        
         _buyInInputField = _configScreen.transform.Find("BuyIn").GetComponentInChildren<TMP_InputField>();
         _nameInputField = _configScreen.transform.Find("AddPlayer").GetComponentInChildren<TMP_InputField>();
         _bBlindInputField = _configScreen.transform.Find("BigBlind").GetComponentInChildren<TMP_InputField>();
+        
         _nameList = new List<string>();
         _names = _configScreen.transform.Find("Players").GetChild(1).GetComponent<TextMeshProUGUI>();
+        _passToPlayerText = _passScreen.transform.Find("PassText").GetComponent<TextMeshProUGUI>();
     }
 
     public void PlayButtonPressed()
@@ -69,7 +77,7 @@ public class UIManager : MonoBehaviour
             builder.Append(", ");
         }
 
-        builder.Remove(builder.Length-2, 2);
+        builder.Remove(builder.Length-2, 2); // to remove last comma and space
         _names.text = builder.ToString();
     }
     public void StartButtonPressed()
@@ -82,11 +90,19 @@ public class UIManager : MonoBehaviour
         var playerCount = _nameList.Count;
         var bigBlind = int.Parse(_bBlindInputField.text);
         
-        if (buyIn <= 0) return;
-        if (playerCount == 0) return;
+        if (buyIn <= 0 || buyIn < bigBlind) return;
+        if (playerCount is 0 or 1) return;
         
         GameConfig config = new GameConfig((short)playerCount, buyIn, bigBlind);
         GameManager.Instance.InitializeGame(config,_nameList);
         // should change the window
+    }
+
+    public void OpenPassScreen(string player)
+    {
+        _passToPlayerText.text = "Please pass the device to " + player + ".";
+        // should also change other active screen
+        _configScreen.SetActive(false);
+        _passScreen.SetActive(true);
     }
 }
