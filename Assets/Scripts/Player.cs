@@ -25,7 +25,7 @@ public enum TurnStatus
 
 public class Player
 {
-    private readonly string _name;
+    public readonly string Name;
     public int Stack { get; private set; }
     public HandStatus Status{ get; private set; }
     public TurnStatus TurnStatus;
@@ -35,7 +35,7 @@ public class Player
     private List<Card> _allCards;
 
     // hole cards only
-    private List<Card> _hand;
+    public List<Card> Hand;
     
     // this is the best hand player can make with 5 cards in his hand and board
      // Aces may appear as 1 in these in the case of wheel straight                          
@@ -44,10 +44,10 @@ public class Player
     
     public Player(string name, int buyIn)
     {
-        _name = name;
+        Name = name;
         Stack = buyIn;
         _allCards = new List<Card>();
-        _hand = new List<Card>();
+        Hand = new List<Card>();
         BestHand = new List<Card>();
         Status = HandStatus.HighCard;
         TurnStatus = TurnStatus.Waiting;
@@ -71,8 +71,8 @@ public class Player
 
     public void AddHoleCards(Card card1, Card card2)
     {
-        _hand.Add(card1);
-        _hand.Add(card2);
+        Hand.Add(card1);
+        Hand.Add(card2);
         _allCards.Add(card1);
         _allCards.Add(card2);
     }
@@ -83,7 +83,11 @@ public class Player
         _allCards.Add(card2);
         _allCards.Add(card3);
     }
-    
+
+    public void AddCard(Card c) // only for test
+    {
+        _allCards.Add(c);
+    }
     public void AddTurnRiverCard(Card card)
     {
         _allCards.Add(card);

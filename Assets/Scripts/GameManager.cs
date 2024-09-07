@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
-enum GamePhase
+public enum GamePhase
 {
     PreFlop = 1,
     Flop = 2,
@@ -28,7 +28,7 @@ public class GameManager
     public Player ActivePlayer { get; private set; }
     public List<Card> CommunityCards { get; private set; }
 
-    private GamePhase _gamePhase;
+    public GamePhase GamePhase;
     private List<Card> _deck;
     private int _cardIndex;
     
@@ -37,7 +37,7 @@ public class GameManager
     private GameConfig _config;
     private static GameManager _instance;
     private Pot _activePot;
-    private List<Pot> _pots;
+    public List<Pot> Pots { get; private set; }
     
     private int _sbIndex;
     private int _queueIndex;
@@ -49,7 +49,7 @@ public class GameManager
         CommunityCards = new List<Card>();
         _random = new Random();
         _players = new List<Player>();
-        _pots = new List<Pot>();
+        Pots = new List<Pot>();
         _sbIndex = 0;
         for (short i = 2; i <= 14; i++)
         {
@@ -78,16 +78,17 @@ public class GameManager
     {
         Shuffle();
 
-        _gamePhase = GamePhase.PreFlop;
+        GamePhase = GamePhase.PreFlop;
         
         _activePot = new Pot(
             _players[_sbIndex+1 % _players.Count], 
             _players[_sbIndex]
             );
         
-        _pots.Add(_activePot);
+        Pots.Add(_activePot);
         ActivePlayer = _players[_sbIndex];
         _queueIndex = _sbIndex;
+        
         
         HandleBlinds();
         
@@ -106,7 +107,7 @@ public class GameManager
         foreach (var card in _deck.GetRange(0,7))
         {
             Debug.Log(card);
-            //efe.AddCard(card);
+            efe.AddCard(card);
         }
         
         efe.Evaluate();
@@ -120,7 +121,7 @@ public class GameManager
     }
     
 
-    private void HandleCheck()
+    public void HandleCheck()
     {
         ActivePlayer.TurnStatus = TurnStatus.Acted;
         do
@@ -134,7 +135,22 @@ public class GameManager
             NextPhase();
         }
     }
-    private void HandleRaise(int bet)
+    
+    public void HandleCall()
+    {
+        ActivePlayer.TurnStatus = TurnStatus.Acted;
+        do
+        {
+            _queueIndex = ++_queueIndex % _players.Count;
+            ActivePlayer = _players[_queueIndex];
+        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+
+        if (ActivePlayer.TurnStatus == TurnStatus.Acted)
+        {
+            NextPhase();
+        }
+    }
+    public void HandleRaise(int bet)
     {
         _activePot.HandlePlayerBet(ActivePlayer, bet);
         
@@ -157,7 +173,7 @@ public class GameManager
         }
         
     }
-    private void HandleFold()
+    public void HandleFold()
     {
         _activePot.HandlePlayerFold(ActivePlayer);
         
@@ -206,7 +222,7 @@ public class GameManager
 
     private void NextPhase()
     {
-        switch (_gamePhase)
+        switch (GamePhase)
         {
             case GamePhase.PreFlop:
             {
@@ -221,7 +237,7 @@ public class GameManager
                 
                 _cardIndex += 3;
                 
-                _gamePhase = GamePhase.Flop;
+                GamePhase = GamePhase.Flop;
                 
                 break;
             }
@@ -235,7 +251,7 @@ public class GameManager
                 
                 _cardIndex ++;
                 
-                _gamePhase = GamePhase.Turn;
+                GamePhase = GamePhase.Turn;
                 
                 break;
             }
@@ -250,7 +266,7 @@ public class GameManager
                 
                 _cardIndex ++;
 
-                _gamePhase = GamePhase.River;
+                GamePhase = GamePhase.River;
                 break;
             }
             
