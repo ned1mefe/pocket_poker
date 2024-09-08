@@ -480,8 +480,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+      - m_Target: {fileID: 1740205471}
+        m_TargetAssemblyTypeName: Screens.PlayScreen, Assembly-CSharp
         m_MethodName: HandleRaise
         m_Mode: 3
         m_Arguments:
@@ -2719,50 +2719,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 682444231}
   m_CullTransparentMesh: 1
---- !u!1 &717029005
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 717029007}
-  - component: {fileID: 717029006}
-  m_Layer: 0
-  m_Name: UIManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &717029006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 717029005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3002e4ea706741749843702eb7423e27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &717029007
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 717029005}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &730356971
 GameObject:
   m_ObjectHideFlags: 0
@@ -2846,9 +2802,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: PlayButtonPressed
+      - m_Target: {fileID: 1756290570}
+        m_TargetAssemblyTypeName: Screens.MainMenuScreen, Assembly-CSharp
+        m_MethodName: PlayButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3018,8 +2974,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+      - m_Target: {fileID: 1740205471}
+        m_TargetAssemblyTypeName: Screens.PlayScreen, Assembly-CSharp
         m_MethodName: HandleCall
         m_Mode: 1
         m_Arguments:
@@ -3285,8 +3241,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+      - m_Target: {fileID: 1740205471}
+        m_TargetAssemblyTypeName: Screens.PlayScreen, Assembly-CSharp
         m_MethodName: HandleFold
         m_Mode: 1
         m_Arguments:
@@ -4206,6 +4162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1191678558}
+  - component: {fileID: 1191678559}
   m_Layer: 5
   m_Name: ConfigScreen
   m_TagString: Untagged
@@ -4238,6 +4195,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -125}
   m_SizeDelta: {x: 0, y: -850}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1191678559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1191678557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6de6e2ee885f12408866d8c09828649, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1213560075
 GameObject:
   m_ObjectHideFlags: 0
@@ -4427,9 +4396,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: OpenPlayScreen
+      - m_Target: {fileID: 1822365546}
+        m_TargetAssemblyTypeName: Screens.PassScreen, Assembly-CSharp
+        m_MethodName: HandleDoneButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4903,8 +4872,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+      - m_Target: {fileID: 1191678559}
+        m_TargetAssemblyTypeName: Screens.ConfigScreen, Assembly-CSharp
         m_MethodName: BackButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -5341,8 +5310,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+      - m_Target: {fileID: 1191678559}
+        m_TargetAssemblyTypeName: Screens.ConfigScreen, Assembly-CSharp
         m_MethodName: StartButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -6106,6 +6075,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1740205469}
   - component: {fileID: 1740205470}
+  - component: {fileID: 1740205471}
   m_Layer: 5
   m_Name: PlayScreen
   m_TagString: Untagged
@@ -6144,6 +6114,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1740205468}
   m_CullTransparentMesh: 1
+--- !u!114 &1740205471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740205468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa2daafcf17634441a778503203062f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1743719130
 GameObject:
   m_ObjectHideFlags: 0
@@ -6226,6 +6208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1756290567}
   - component: {fileID: 1756290569}
+  - component: {fileID: 1756290570}
   m_Layer: 5
   m_Name: MainMenuScreen
   m_TagString: Untagged
@@ -6262,6 +6245,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1756290566}
   m_CullTransparentMesh: 1
+--- !u!114 &1756290570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756290566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94fb0c7d9e597d14e86ff1d949dd7e2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1766434592
 GameObject:
   m_ObjectHideFlags: 0
@@ -6391,8 +6386,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+      - m_Target: {fileID: 1191678559}
+        m_TargetAssemblyTypeName: Screens.ConfigScreen, Assembly-CSharp
         m_MethodName: AddPlayerButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -6524,8 +6519,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+      - m_Target: {fileID: 1740205471}
+        m_TargetAssemblyTypeName: Screens.PlayScreen, Assembly-CSharp
         m_MethodName: HandleCheck
         m_Mode: 1
         m_Arguments:
@@ -6624,6 +6619,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1822365544}
   - component: {fileID: 1822365545}
+  - component: {fileID: 1822365546}
   m_Layer: 5
   m_Name: PassScreen
   m_TagString: Untagged
@@ -6660,6 +6656,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1822365543}
   m_CullTransparentMesh: 1
+--- !u!114 &1822365546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822365543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c773012dd6d331e4bb1f57be70cd7117, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1880861307
 GameObject:
   m_ObjectHideFlags: 0
@@ -7220,7 +7228,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 717029006}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: HTPButtonPressed
         m_Mode: 1
@@ -7314,4 +7322,3 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 1213560079}
   - {fileID: 2202034}
-  - {fileID: 717029007}
