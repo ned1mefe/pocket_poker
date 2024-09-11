@@ -84,7 +84,7 @@ namespace Screens
             if (buyIn <= 0 || buyIn < bigBlind) return;
             if (playerCount is 0 or 1) return;
         
-            GameConfig config = new GameConfig((short)playerCount, buyIn, bigBlind);
+            GameConfig config = new GameConfig(buyIn, bigBlind);
             GameManager.Instance.InitializeGame(config,_nameList);
 
             UIManager.Instance.ShowScreenByType<PassScreen>();

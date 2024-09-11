@@ -21,6 +21,7 @@ public enum TurnStatus
     Waiting = 1,
     Acted = 2,
     Folded = 3,
+    AllIn = 4
 }
 
 public class Player

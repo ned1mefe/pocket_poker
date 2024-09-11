@@ -34,7 +34,7 @@ public class GameManager
     
     private readonly Random _random;
     private List<Player> _players;
-    private GameConfig _config;
+    public GameConfig Config { get; private set; }
     private static GameManager _instance;
     private Pot _activePot;
     public List<Pot> Pots { get; private set; }
@@ -50,7 +50,7 @@ public class GameManager
         _random = new Random();
         _players = new List<Player>();
         Pots = new List<Pot>();
-        _sbIndex = 0;
+        _sbIndex = -1;
         for (short i = 2; i <= 14; i++)
         {
             _deck.Add(new Card(i, Kind.Club));
@@ -62,7 +62,7 @@ public class GameManager
 
     public void InitializeGame(GameConfig config, List<String> nameList)
     {
-        _config = config;
+        Config = config;
 
         foreach (var name in nameList)
         {
@@ -76,49 +76,28 @@ public class GameManager
 
     private void StartMainPot()
     {
+        _sbIndex++;
         Shuffle();
+        Pots.Clear();
+        foreach (var player in _players)
+        {
+            player.TurnStatus = TurnStatus.Waiting;
+        }
 
         GamePhase = GamePhase.PreFlop;
         
-        _activePot = new Pot(
-            _players[_sbIndex+1 % _players.Count], 
-            _players[_sbIndex]
-            );
+        _activePot = new Pot(_players);
         
         Pots.Add(_activePot);
         ActivePlayer = _players[_sbIndex];
         _queueIndex = _sbIndex;
         
-        
         HandleBlinds();
         
         DealToPlayers();
-        
     }
     
 
-    public void Test()
-    {
-        Debug.LogWarning("Hand:");
-        Shuffle();
-
-        var efe = new Player("efe", 250);
-        
-        foreach (var card in _deck.GetRange(0,7))
-        {
-            Debug.Log(card);
-            efe.AddCard(card);
-        }
-        
-        efe.Evaluate();
-
-        Debug.LogError(efe.Status);
-        foreach (var card in efe.BestHand)
-        {
-            Debug.Log(card);
-        }
-        
-    }
     
 
     public void HandleCheck()
@@ -128,22 +107,32 @@ public class GameManager
         {
             _queueIndex = ++_queueIndex % _players.Count;
             ActivePlayer = _players[_queueIndex];
-        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+        } while (ActivePlayer.TurnStatus is TurnStatus.Folded or TurnStatus.AllIn);
 
         if (ActivePlayer.TurnStatus == TurnStatus.Acted)
         {
             NextPhase();
         }
     }
-    
-    public void HandleCall()
+    public void HandleCall(int bet) //should take the bet from self
     {
-        ActivePlayer.TurnStatus = TurnStatus.Acted;
+        if (bet == ActivePlayer.Stack)
+        {
+            ActivePlayer.TurnStatus = TurnStatus.AllIn;
+            if (_players.All(p => p.TurnStatus is TurnStatus.AllIn or TurnStatus.Folded))
+            {
+                //finish game right here
+            }
+        }
+        else
+        {
+            ActivePlayer.TurnStatus = TurnStatus.Acted;
+        }
         do
         {
             _queueIndex = ++_queueIndex % _players.Count;
             ActivePlayer = _players[_queueIndex];
-        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+        } while (ActivePlayer.TurnStatus is TurnStatus.Folded or TurnStatus.AllIn);
 
         if (ActivePlayer.TurnStatus == TurnStatus.Acted)
         {
@@ -154,18 +143,30 @@ public class GameManager
     {
         _activePot.HandlePlayerBet(ActivePlayer, bet);
         
+        
         foreach (var player in _players.Where(player => player.TurnStatus == TurnStatus.Acted))
         {
             player.TurnStatus = TurnStatus.Waiting;
         }
-        
-        ActivePlayer.TurnStatus = TurnStatus.Acted;
+
+        if (bet == ActivePlayer.Stack)
+        {
+            ActivePlayer.TurnStatus = TurnStatus.AllIn;
+            if (_players.All(p => p.TurnStatus is TurnStatus.AllIn or TurnStatus.Folded))
+            {
+                //finish game right here
+            }
+        }
+        else
+        {
+            ActivePlayer.TurnStatus = TurnStatus.Acted;
+        }
         
         do
         {
             _queueIndex = ++_queueIndex % _players.Count;
             ActivePlayer = _players[_queueIndex];
-        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+        } while (ActivePlayer.TurnStatus is TurnStatus.Folded or TurnStatus.AllIn);
 
         if (ActivePlayer.TurnStatus == TurnStatus.Acted)
         {
@@ -177,13 +178,20 @@ public class GameManager
     {
         _activePot.HandlePlayerFold(ActivePlayer);
         
+        if (_activePot.Players.Count == 1) // if everyone folds, game ends
+        {
+            Pots.ForEach(p => p.EndPot());
+            StartMainPot();
+            return;
+        }
+        
         ActivePlayer.TurnStatus = TurnStatus.Folded;
         
         do
         {
             _queueIndex = ++_queueIndex % _players.Count;
             ActivePlayer = _players[_queueIndex];
-        } while (ActivePlayer.TurnStatus == TurnStatus.Folded);
+        } while (ActivePlayer.TurnStatus is TurnStatus.Folded or TurnStatus.AllIn);
 
         if (ActivePlayer.TurnStatus == TurnStatus.Acted)
         {
@@ -192,14 +200,14 @@ public class GameManager
         
     }
 
-    private void HandleBlinds()
+    private void HandleBlinds() //check if they are all in
     {
-        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind/2);
+        _activePot.HandlePlayerBet(ActivePlayer, Config.BigBlind/2);
         
         _queueIndex = ++_queueIndex % _players.Count;
         ActivePlayer = _players[_queueIndex];
         
-        _activePot.HandlePlayerBet(ActivePlayer, _config.BigBlind);
+        _activePot.HandlePlayerBet(ActivePlayer, Config.BigBlind);
         
         _queueIndex = ++_queueIndex % _players.Count;
         ActivePlayer = _players[_queueIndex];
@@ -270,20 +278,40 @@ public class GameManager
                 break;
             }
             
-            case GamePhase.River:
+            case GamePhase.River: //should check this
             {
-                
-                //Should choose the winner and start a new main Pot
+                _activePot.EndPot();
+                StartMainPot();
                 break;
             }
         }
-        
         foreach (var player in _players.Where(player => player.TurnStatus == TurnStatus.Acted))
         {
             player.TurnStatus = TurnStatus.Waiting;
         }
+    }
+
+    //This is the old test method
+    public void Test()
+    {
+        Debug.LogWarning("Hand:");
+        Shuffle();
+
+        var efe = new Player("efe", 250);
         
+        foreach (var card in _deck.GetRange(0,7))
+        {
+            Debug.Log(card);
+            efe.AddCard(card);
+        }
+        
+        efe.Evaluate();
+
+        Debug.LogError(efe.Status);
+        foreach (var card in efe.BestHand)
+        {
+            Debug.Log(card);
+        }
         
     }
-    
 }

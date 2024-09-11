@@ -18,9 +18,12 @@ namespace Screens
         private RawImage _cCard4;
         private RawImage _cCard5;
         private TextMeshProUGUI _turnText;
-        private TextMeshProUGUI _betInfoText;
+        private TextMeshProUGUI _infoText;
         private TextMeshProUGUI _stackText;
         private TextMeshProUGUI _potText;
+        private RectTransform _betPanel;
+        private int _selectedBet;
+        private Slider _slider;
         
         private void Initialize()
         {
@@ -33,9 +36,16 @@ namespace Screens
             _cCard5 = transform.Find("CommunityCards").transform.Find("CCard5").GetComponent<RawImage>();
 
             _turnText = transform.Find("Infos").transform.Find("TurnText").GetComponent<TextMeshProUGUI>();
-            _betInfoText = transform.Find("Infos").transform.Find("BetInfoText").GetComponent<TextMeshProUGUI>();
+            _infoText = transform.Find("Infos").transform.Find("BetInfoText").GetComponent<TextMeshProUGUI>();
             _stackText = transform.Find("Infos").transform.Find("StackText").GetComponent<TextMeshProUGUI>();
             _potText = transform.Find("Infos").transform.Find("PotText").GetComponent<TextMeshProUGUI>();
+            _betPanel = transform.Find("BetPanel").GetComponent<RectTransform>();
+            _selectedBet = Math.Min(GameManager.Instance.Config.BigBlind * 2, GameManager.Instance.ActivePlayer.Stack);
+            _slider = _betPanel.transform.Find("Slider").GetComponent<Slider>();
+
+            _slider.minValue = Math.Min(GameManager.Instance.Config.BigBlind * 2, GameManager.Instance.ActivePlayer.Stack);
+            _slider.maxValue = Math.Max(GameManager.Instance.Config.BigBlind * 2, GameManager.Instance.ActivePlayer.Stack);
+            _slider.onValueChanged.AddListener(delegate { SliderValueChange(); });
         }
 
         public void HandleShow()
@@ -95,7 +105,57 @@ namespace Screens
         {
             gameObject.SetActive(false);
         }
-        
+
+        public void OpenBetPanel()
+        {
+            _betPanel.gameObject.SetActive(true);
+        }
+
+        public void CloseBetPanel()
+        {
+            _betPanel.gameObject.SetActive(false);
+        }
+
+        public void HandleCall()
+        {
+            GameManager.Instance.HandleCall(50);
+            UIManager.Instance.ShowScreenByType<PassScreen>();
+        }
+    
+        public void HandleCheck()
+        {
+            GameManager.Instance.HandleCheck();
+            UIManager.Instance.ShowScreenByType<PassScreen>();
+        }
+    
+        public void HandleFold()
+        {
+            GameManager.Instance.HandleFold();
+            UIManager.Instance.ShowScreenByType<PassScreen>();
+        }
+    
+        public void HandleRaise()
+        {
+            GameManager.Instance.HandleRaise(_selectedBet);
+            CloseBetPanel();
+            UIManager.Instance.ShowScreenByType<PassScreen>();
+        }
+
+        public void HalfPot()
+        {
+            _selectedBet = GameManager.Instance.Pots.Sum(x => x.Money) / 2;
+        }
+        public void FullPot()
+        {
+            _selectedBet = GameManager.Instance.Pots.Sum(x => x.Money);
+        }
+
+        public void AllIn()
+        {
+            _selectedBet = GameManager.Instance.ActivePlayer.Stack;
+        }
+
+        private void SliderValueChange() => _selectedBet = (int)_slider.value;
         private string NameOf(Card card)
         {
             StringBuilder sb = new StringBuilder();
@@ -114,31 +174,6 @@ namespace Screens
 
             sb.Append(card.Number.ToString());
             return sb.ToString();
-        }
-
-        public void HandleCall()
-        {
-            GameManager.Instance.HandleCall();
-            UIManager.Instance.ShowScreenByType<PassScreen>();
-
-        }
-    
-        public void HandleCheck()
-        {
-            GameManager.Instance.HandleCheck();
-            UIManager.Instance.ShowScreenByType<PassScreen>();
-        }
-    
-        public void HandleFold()
-        {
-            GameManager.Instance.HandleFold();
-            UIManager.Instance.ShowScreenByType<PassScreen>();
-        }
-    
-        public void HandleRaise(int bet)
-        {
-            GameManager.Instance.HandleRaise(bet);
-            UIManager.Instance.ShowScreenByType<PassScreen>();
         }
     }
 }
