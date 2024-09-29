@@ -23,7 +23,9 @@ namespace Screens
         private TextMeshProUGUI _potText;
         private RectTransform _betPanel;
         private int _selectedBet;
+        private TextMeshProUGUI _confirmRaiseText;
         private Slider _slider;
+        
         
         private void Initialize()
         {
@@ -36,7 +38,7 @@ namespace Screens
             _cCard5 = transform.Find("CommunityCards").transform.Find("CCard5").GetComponent<RawImage>();
 
             _turnText = transform.Find("Infos").transform.Find("TurnText").GetComponent<TextMeshProUGUI>();
-            _infoText = transform.Find("Infos").transform.Find("BetInfoText").GetComponent<TextMeshProUGUI>();
+            //_infoText = transform.Find("Infos").transform.Find("BetInfoText").GetComponent<TextMeshProUGUI>();
             _stackText = transform.Find("Infos").transform.Find("StackText").GetComponent<TextMeshProUGUI>();
             _potText = transform.Find("Infos").transform.Find("PotText").GetComponent<TextMeshProUGUI>();
             _betPanel = transform.Find("BetPanel").GetComponent<RectTransform>();
@@ -46,6 +48,10 @@ namespace Screens
             _slider.minValue = Math.Min(GameManager.Instance.Config.BigBlind * 2, GameManager.Instance.ActivePlayer.Stack);
             _slider.maxValue = Math.Max(GameManager.Instance.Config.BigBlind * 2, GameManager.Instance.ActivePlayer.Stack);
             _slider.onValueChanged.AddListener(delegate { SliderValueChange(); });
+
+            _confirmRaiseText = transform.Find("ActionButtons").transform.Find("ConfirmRaise")
+                .GetComponentInChildren<TextMeshProUGUI>();
+            _confirmRaiseText.text = "Raise: " + _selectedBet;
         }
 
         public void HandleShow()
@@ -143,19 +149,31 @@ namespace Screens
 
         public void HalfPot()
         {
-            _selectedBet = GameManager.Instance.Pots.Sum(x => x.Money) / 2;
+            _selectedBet = Math.Max(GameManager.Instance.Pots.Sum(x => x.Money) / 2, GameManager.Instance.Config.BigBlind) ;
+            _slider.value = _selectedBet;
+            _confirmRaiseText.text = "Raise: " + _selectedBet;
         }
         public void FullPot()
         {
             _selectedBet = GameManager.Instance.Pots.Sum(x => x.Money);
+            _slider.value = _selectedBet;
+            _confirmRaiseText.text = "Raise: " + _selectedBet;
         }
 
         public void AllIn()
         {
             _selectedBet = GameManager.Instance.ActivePlayer.Stack;
+            _slider.value = _selectedBet;
+            _confirmRaiseText.text = "Raise: " + _selectedBet;
+
         }
 
-        private void SliderValueChange() => _selectedBet = (int)_slider.value;
+        private void SliderValueChange()
+        {
+            _selectedBet = (int)_slider.value;
+            _confirmRaiseText.text = "Raise: " + _selectedBet;
+        }
+
         private string NameOf(Card card)
         {
             StringBuilder sb = new StringBuilder();

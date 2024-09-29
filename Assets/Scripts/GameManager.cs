@@ -25,20 +25,19 @@ public class GameManager
             return _instance;
         }
     }
+    private static GameManager _instance;
+    
     public Player ActivePlayer { get; private set; }
     public List<Card> CommunityCards { get; private set; }
-
+    public GameConfig Config { get; private set; }
+    public List<Pot> Pots { get; private set; }
     public GamePhase GamePhase;
-    private List<Card> _deck;
-    private int _cardIndex;
     
     private readonly Random _random;
+    private List<Card> _deck;
+    private int _cardIndex;
     private List<Player> _players;
-    public GameConfig Config { get; private set; }
-    private static GameManager _instance;
     private Pot _activePot;
-    public List<Pot> Pots { get; private set; }
-    
     private int _sbIndex;
     private int _queueIndex;
 
@@ -76,7 +75,7 @@ public class GameManager
 
     private void StartMainPot()
     {
-        _sbIndex++;
+        _sbIndex = (_sbIndex + 1) % _players.Count;
         Shuffle();
         Pots.Clear();
         foreach (var player in _players)

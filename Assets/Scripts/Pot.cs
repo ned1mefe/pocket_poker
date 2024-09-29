@@ -18,19 +18,6 @@ public class Pot
         Money += bet;
     }
     public void HandlePlayerFold(Player player) => Players.Remove(player);
-    public void RewardWinners(List<Player> winners)
-    {
-        var winnerCount = winners.Count;
-        var remainder = Money % winnerCount;
-        var winAmount = Money / winnerCount;
-
-        foreach (var player in winners)
-        {
-            player.WinPot(winAmount);
-        }
-
-        winners[0].WinPot(remainder); // one lucky player gets the remainder
-    }
     
     public void EndPot()
     {
@@ -76,6 +63,19 @@ public class Pot
         }
 
         return winners;
+    }
+    private void RewardWinners(List<Player> winners)
+    {
+        var winnerCount = winners.Count;
+        var remainder = Money % winnerCount;
+        var winAmount = Money / winnerCount;
+
+        foreach (var player in winners)
+        {
+            player.WinPot(winAmount);
+        }
+
+        winners[0].WinPot(remainder); // one lucky player gets the remainder
     }
 
 }
